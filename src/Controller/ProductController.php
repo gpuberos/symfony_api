@@ -3,25 +3,39 @@
 namespace App\Controller;
 
 use App\Entity\Product;
+use App\Service\ProductService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class ProductController extends AbstractController
 {
-    #[Route('/product', name: 'create_product')]
-    public function createProduct(EntityManagerInterface $entityManager): Response
+    private ProductService $productService;
+    private SerializerInterface $serializer;
+
+    public function __construct(SerializerInterface $serializer, EntityManagerInterface $entityManager)
     {
-        $product = new Product;
-        $product->setName('The Witcher');
-        $product->setPrice(7.99);
-        $product->setDescription('Incarnez le sorceleur Geralt de Riv, le légendaire tueur de monstre, happé dans une mystérieuse toile tissée par les forces luttant pour contrôler le monde. Prenez des décisions difficiles et assumez leurs conséquences dans un jeu qui vous plongera dans une aventure exceptionnelle.');
+        $this->productService = new ProductService($entityManager);
+        $this->serializer = $serializer;
+    }
 
-        $entityManager->persist($product);
+    #[Route('/api/products', methods: ['GET'])]
+    public function getAllProducts()
+    {
+        return new Response($this->serializer->serialize($this->productService->getAllProducts(), 'json'));
+    }
 
-        $entityManager->flush();
+    #[Route('/api/products/{id}', methods: ['GET'])]
+    public function getProduct(int $id) {
+        return new Response($this->serializer->serialize($this->productService->getProduct($id), 'json'));
+    }
 
-        return new Response("Saved new product with id: {$product->getId()}");
+    #[Route('/api/products', methods: ['POST'])]
+    public function createProduct(#[MapRequestPayload] Product $product): Response
+    {
+        return new Response($this->serializer->serialize($this->productService->createProduct($product), 'json'));
     }
 }
