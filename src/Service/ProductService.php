@@ -29,9 +29,23 @@ class ProductService
         return $this->entityManager->getRepository(Product::class)->findAll();
     }
 
-    public function getProduct(int $id): Product
+    public function getProduct(int $id): ?Product
     {
         return $this->entityManager->getRepository(Product::class)->find($id);
+    }
+
+    public function deleteProduct(int $id): string
+    {
+        $product = $this->entityManager->getRepository(Product::class)->find($id);
+        
+        if ($product) {
+            $this->entityManager->remove($product);
+            $this->entityManager->flush();
+            return "Le produit avec l'ID {$id} a été supprimé avec succès !";
+
+        } else {
+            return "Le produit avec l'ID {$id} n'existe pas.";
+        }
     }
     
     public function createProduct(Product $product)

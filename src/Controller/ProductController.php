@@ -11,6 +11,7 @@ use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
+#[Route('/api/v1/products')]
 class ProductController extends AbstractController
 {
     private ProductService $productService;
@@ -22,20 +23,28 @@ class ProductController extends AbstractController
         $this->serializer = $serializer;
     }
 
-    #[Route('/api/products', methods: ['GET'])]
+    #[Route(methods: ['GET'])]
     public function getAllProducts()
     {
         return new Response($this->serializer->serialize($this->productService->getAllProducts(), 'json'));
     }
 
-    #[Route('/api/products/{id}', methods: ['GET'])]
+    #[Route('/{id}', methods: ['GET'])]
     public function getProduct(int $id) {
         return new Response($this->serializer->serialize($this->productService->getProduct($id), 'json'));
     }
 
-    #[Route('/api/products', methods: ['POST'])]
+    #[Route(methods: ['POST'])]
     public function createProduct(#[MapRequestPayload] Product $product): Response
     {
         return new Response($this->serializer->serialize($this->productService->createProduct($product), 'json'));
+    }
+
+    #[Route('/{id}', methods: ['DELETE'])]
+    public function deleteProduct(int $id): Response
+    {
+        $message = $this->productService->deleteProduct($id);
+        return new Response($message);
+
     }
 }
