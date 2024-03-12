@@ -30,7 +30,8 @@ class ProductController extends AbstractController
     }
 
     #[Route('/{id}', methods: ['GET'])]
-    public function getProduct(int $id) {
+    public function getProduct(int $id)
+    {
         return new Response($this->serializer->serialize($this->productService->getProduct($id), 'json'));
     }
 
@@ -45,6 +46,5 @@ class ProductController extends AbstractController
     {
         $message = $this->productService->deleteProduct($id);
         return new Response($message);
-
     }
 }

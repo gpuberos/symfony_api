@@ -37,17 +37,16 @@ class ProductService
     public function deleteProduct(int $id): string
     {
         $product = $this->entityManager->getRepository(Product::class)->find($id);
-        
+
         if ($product) {
             $this->entityManager->remove($product);
             $this->entityManager->flush();
             return "Le produit avec l'ID {$id} a été supprimé avec succès !";
-
         } else {
             return "Le produit avec l'ID {$id} n'existe pas.";
         }
     }
-    
+
     public function createProduct(Product $product)
     {
         // Création de la nouvelle instance produit
