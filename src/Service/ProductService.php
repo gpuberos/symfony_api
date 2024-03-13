@@ -73,14 +73,13 @@ class ProductService
                 ->setName($product->getName())
                 ->setPrice($product->getPrice())
                 ->setDescription($product->getDescription());
-            
-                $this->entityManager->flush();
 
-                return "Le produit avec l'ID {$id} a été mis à jour avec succès !";
+            $this->entityManager->flush();
+
+            return "Le produit avec l'ID {$id} a été mis à jour avec succès !";
         } else {
             return "Le produit avec l'ID {$id} n'existe pas.";
         }
-        
     }
 
     public function patchProduct(int $id, Product $product): string
