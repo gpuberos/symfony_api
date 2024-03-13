@@ -47,7 +47,7 @@ class ProductService
         }
     }
 
-    public function createProduct(Product $product)
+    public function createProduct(Product $product): Product
     {
         // Création de la nouvelle instance produit
         $newProduct = new Product;
@@ -62,5 +62,47 @@ class ProductService
         $this->entityManager->flush();
 
         return $newProduct;
+    }
+
+    public function putProduct(int $id, Product $product): string
+    {
+        $existingProduct = $this->entityManager->getRepository(Product::class)->find($id);
+
+        if ($existingProduct) {
+            $existingProduct
+                ->setName($product->getName())
+                ->setPrice($product->getPrice())
+                ->setDescription($product->getDescription());
+            
+                $this->entityManager->flush();
+
+                return "Le produit avec l'ID {$id} a été mis à jour avec succès !";
+        } else {
+            return "Le produit avec l'ID {$id} n'existe pas.";
+        }
+        
+    }
+
+    public function patchProduct(int $id, Product $product): string
+    {
+        $existingProduct = $this->entityManager->getRepository(Product::class)->find($id);
+
+        if ($existingProduct) {
+            if ($product->getName() !== null) {
+                $existingProduct->setName($product->getName());
+            }
+            if ($product->getPrice() !== null) {
+                $existingProduct->setPrice($product->getPrice());
+            }
+            if ($product->getDescription() !== null) {
+                $existingProduct->setDescription($product->getDescription());
+            }
+
+            $this->entityManager->flush();
+
+            return "Le produit avec l'ID {$id} a été mis à jour avec succès !";
+        } else {
+            return "Le produit avec l'ID {$id} n'existe pas.";
+        }
     }
 }

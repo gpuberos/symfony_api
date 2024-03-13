@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
+use Symfony\Component\Routing\Annotation\Route as AnnotationRoute;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -23,28 +24,42 @@ class ProductController extends AbstractController
         $this->serializer = $serializer;
     }
 
-    #[Route(methods: ['GET'])]
+    #[Route(name: "get_all_products", methods: ['GET'])]
     public function getAllProducts()
     {
         return new Response($this->serializer->serialize($this->productService->getAllProducts(), 'json'));
     }
 
-    #[Route('/{id}', methods: ['GET'])]
+    #[Route('/{id}', name: "get_product", methods: ['GET'])]
     public function getProduct(int $id)
     {
         return new Response($this->serializer->serialize($this->productService->getProduct($id), 'json'));
     }
 
-    #[Route(methods: ['POST'])]
+    #[Route(name: "add_product", methods: ['POST'])]
     public function createProduct(#[MapRequestPayload] Product $product): Response
     {
         return new Response($this->serializer->serialize($this->productService->createProduct($product), 'json'));
     }
 
-    #[Route('/{id}', methods: ['DELETE'])]
+    #[Route('/{id}', name: "delete_product", methods: ['DELETE'])]
     public function deleteProduct(int $id): Response
     {
         $message = $this->productService->deleteProduct($id);
+        return new Response($message);
+    }
+
+    #[Route("/{id}", name: "put_product", methods: ['PUT'])]
+    public function putProduct(int $id, #[MapRequestPayload] Product $product): Response
+    {
+        $message = $this->productService->putProduct($id, $product);
+        return new Response($message);
+    }
+
+    #[Route("/{id}", name: "patch_product", methods: ['PATCH'])]
+    public function patchProduct(int $id, #[MapRequestPayload] Product $product): Response
+    {
+        $message = $this->productService->patchProduct($id, $product);
         return new Response($message);
     }
 }
